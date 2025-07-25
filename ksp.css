@@ -1,0 +1,88 @@
+/* Reset and Font */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Times New Roman", Times, serif;
+}
+
+body {
+    background-color: #f9f9f9;
+    color: #333;
+    line-height: 1.6;
+}
+
+.header {
+    background: linear-gradient(to top, #14145c, #000000);
+    color: #fff;
+    text-align: center;
+    padding: 1.5rem 0;
+}
+
+.header h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.search-container {
+    margin-top: 1rem;
+}
+
+.search-container input[type="text"] {
+    width: 80%;
+    padding: 0.75rem;
+    font-size: 1rem;
+    border: none;
+    border-radius: 5px;
+    outline: none;
+}
+
+.content {
+    max-width: 800px;
+    margin: 2rem auto;
+    padding: 1.5rem;
+}
+
+.section h2 {
+    color: #003366;
+    font-size: 1.6rem;
+    margin-bottom: 0.5rem;
+    transition: color 0.3s, transform 0.3s;
+}
+
+.section h2:hover {
+    color: #00c7c7;
+    transform: scale(1.05);
+}
+
+.section p, .section ul {
+    color: #333;
+    margin-bottom: 1rem;
+}
+
+.section ul {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+}
+
+.section ul li {
+    margin: 0.5rem 0;
+}
+
+.footer {
+    background-color: #004680;
+    color: #fff;
+    text-align: center;
+    padding: 1rem 0;
+    margin-top: 2rem;
+}
+
+.footer p {
+    font-size: 0.9rem;
+    opacity: 0.8;
+}

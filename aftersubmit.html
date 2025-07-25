@@ -1,0 +1,211 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Options</title>
+    <style>
+        /* Global styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background:linear-gradient(to left, #14145c, #000000); /* Set a single background color for the entire page */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: column;
+            box-sizing: border-box;
+        }
+
+        .container {
+            width: 80%;
+            height: 100%;
+            padding: 20px;
+            background: linear-gradient(to left, #14145c, #000000); /* Blue background for the container */
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        h1 {
+            text-align: center;
+            color: white;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+            font-weight: 600;
+        }
+
+        /* Loan option container */
+        .loan-option {
+            display: flex;
+            justify-content: space-evenly;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+            width: 100%;
+        }
+
+        .loan-card {
+            background-color: white;
+            color:#000000 ;
+            padding: 30px;
+            border-radius: 8px;
+            width: 45%;
+            text-align: center;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+            font-size: 1.2rem;
+        }
+
+        /* Hover effect for loan cards */
+        .loan-card:hover {
+            background-color: aqua;
+            color: black;
+        }
+
+        /* Options (Loan Insights and Eligibility Check) */
+        .options {
+            display: none;
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        .loan-status-btn {
+            display: block;
+            margin: 30px auto;
+            padding: 15px 30px;
+            background-color: aqua;
+            color: black;
+            font-size: 18px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .loan-status-btn:hover {
+            background-color: white;
+        }
+
+        /* Loan Insights and Eligibility Buttons */
+        .loan-info-btn,
+        .eligibility-btn {
+            font-size: 1.1rem;
+            padding: 15px 30px;
+            border-radius: 8px;
+            width: 200px;
+            margin: 10px;
+            cursor: pointer;
+            border: none;
+            transition: transform 0.3s ease;
+        }
+
+        .loan-info-btn {
+            background-color: #008CBA;
+            color: black;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .loan-info-btn:hover {
+            background-color: aqua;
+            transform: scale(1.05);
+        }
+
+        .eligibility-btn {
+            background-color: #008CBA;
+            color: black;
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+        }
+
+        .eligibility-btn:hover {
+            background-color: aqua;
+            transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Choose Your Loan Type</h1>
+        
+        <div class="loan-option">
+            <!-- First row: Educational Loan, Home Loan, Business Loan -->
+            <div class="loan-card" onclick="toggleOptions('educational')">Educational Loan</div>
+            <div class="loan-card" onclick="toggleOptions('home')">Home Loan</div>
+            <div class="loan-card" onclick="toggleOptions('business')">Business Loan</div>
+        </div>
+
+        <div class="loan-option">
+            <!-- Second row: Vehicle Loan & Personal Loan -->
+            <div class="loan-card" onclick="toggleOptions('vehicle')">Vehicle Loan</div>
+            <div class="loan-card" onclick="toggleOptions('personal')">Personal Loan</div>
+        </div>
+
+        <!-- Loan Options Section (Loan Insights and Eligibility) -->
+        <div id="educational" class="options">
+            <a class="loan-info-btn" href="loan-insights-education.html">Loan Insights</a>
+            <a class="eligibility-btn" href="egedu (1).html" target="_blank">Eligibility Check</a>
+        </div>
+
+        <div id="personal" class="options">
+            <a class="loan-info-btn" href="loan-insights-personal.html" target="_blank">Loan Insights</a>
+            <a class="eligibility-btn" href="egper.html" target="_blank">Eligibility Check</a>
+        </div>
+
+        <div id="vehicle" class="options">
+            <a class="loan-info-btn" href="loan-insights-vehicle.html" target="_blank">Loan Insights</a>
+            <a class="eligibility-btn" href="egveh.html" target="_blank">Eligibility Check</a>
+        </div>
+
+        <div id="home" class="options">
+            <a class="loan-info-btn" href="loan-insights-home.html" target="_blank">Loan Insights</a>
+            <a class="eligibility-btn" href="egehom.html" target="_blank">Eligibility Check</a>
+        </div>
+
+        <div id="business" class="options">
+            <a class="loan-info-btn" href="loan-insights-business.html" target="_blank">Loan Insights</a>
+            <a class="eligibility-btn" href="egbui.html" target="_blank">Eligibility Check</a>
+        </div>
+
+        <!-- Loan Status Button -->
+        <button class="loan-status-btn" onclick="window.open('loanstatus.html', '_blank')">Loan Status</button>
+    </div>
+
+    <script>
+        // Create a state object to keep track of click counts
+        const loanClicks = {};
+
+        function toggleOptions(loanType) {
+            // Hide all loan options
+            const allOptions = document.querySelectorAll('.options');
+            allOptions.forEach(option => {
+                option.style.display = 'none';
+            });
+
+            // Track the number of clicks for this loan type
+            loanClicks[loanType] = (loanClicks[loanType] || 0) + 1;
+
+            // Get the corresponding options for this loan type
+            const selectedLoan = document.getElementById(loanType);
+
+            // If clicked twice, hide the options, otherwise show them
+            if (loanClicks[loanType] % 2 === 0) {
+                selectedLoan.style.display = 'none'; // Hide the options on second click
+            } else {
+                selectedLoan.style.display = 'block'; // Show the options on first click
+            }
+        }
+    </script>
+</body>
+</html>

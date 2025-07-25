@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loan Status Check</title>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      background: linear-gradient(to bottom, #000000, #14145c);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 450px; /* Reduced the container width */
+      margin: 50px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      color: #14145c;
+    }
+
+    form label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+      font-size: 1rem;
+      text-align: left;
+    }
+
+    form input, form button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 1rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    form input {
+      border: 1px solid #ddd;
+      transition: border-color 0.3s ease;
+    }
+
+    form input:focus {
+      border-color:#14145c;
+      outline: none;
+    }
+
+    form button {
+      background: #14145c;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    form button:hover {
+      background: #00c7c7;
+    }
+
+    #chartContainer {
+      margin-top: 30px;
+    }
+
+    canvas {
+      max-width: 100%;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .details {
+      font-size: 1.1em;
+      margin-top: 20px;
+      color: #444;
+      text-align: left;
+    }
+
+    .details strong {
+      color: #141457;
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.9em;
+      color: #eee;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Loan Status Check</h2>
+    <form id="loanStatusForm">
+      <label for="loanAmount">Loan Amount (₹)</label>
+      <input type="number" id="loanAmount" name="loanAmount" placeholder="Enter total loan amount" required>
+
+      <label for="tenure">Tenure (in months)</label>
+      <input type="number" id="tenure" name="tenure" placeholder="Enter total tenure in months" required>
+
+      <label for="interestRate">Interest Rate (%)</label>
+      <input type="number" id="interestRate" name="interestRate" placeholder="Enter interest rate" required>
+
+      <label for="monthsPaid">Months Paid</label>
+      <input type="number" id="monthsPaid" name="monthsPaid" placeholder="Enter number of months paid" required>
+
+      <button type="submit">Check Status</button>
+    </form>
+    <div id="chartContainer">
+      <canvas id="loanChart" width="400" height="200"></canvas>
+      <p id="details"></p>
+    </div>
+  </div>
+
+  <footer>© 2024 Loan Tracker Inc. | Designed for better insights.</footer>
+
+  <script>
+    const form = document.getElementById('loanStatusForm');
+    const loanChart = document.getElementById('loanChart');
+    const details = document.getElementById('details');
+    let chart;
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      // Inputs
+      const loanAmount = parseFloat(document.getElementById('loanAmount').value);
+      const tenure = parseInt(document.getElementById('tenure').value, 10);
+      const interestRate = parseFloat(document.getElementById('interestRate').value);
+      const monthsPaid = parseInt(document.getElementById('monthsPaid').value, 10);
+
+      if (monthsPaid > tenure) {
+        alert("Months paid cannot exceed total tenure!");
+        return;
+      }
+
+      // Calculations
+      const monthlyRate = interestRate / 12 / 100;
+      const emi = (loanAmount * monthlyRate * Math.pow(1 + monthlyRate, tenure)) /
+                  (Math.pow(1 + monthlyRate, tenure) - 1);
+
+      const totalPaid = emi * monthsPaid;
+      const balanceAmount = (emi * tenure) - totalPaid;
+      const remainingTenure = tenure - monthsPaid;
+
+      // Update Chart and Details
+      updateChartAndDetails(monthsPaid, tenure, totalPaid, balanceAmount, remainingTenure, emi);
+    });
+
+    function updateChartAndDetails(monthsPaid, tenure, totalPaid, balanceAmount, remainingTenure, emi) {
+      const ctx = loanChart.getContext('2d');
+
+      if (chart) {
+        chart.destroy(); // Clear previous chart
+      }
+
+      // Display Details
+      details.innerHTML = `
+        <div class="details">
+          <p><strong>Total Paid:</strong> ₹${totalPaid.toFixed(2)}</p>
+          <p><strong>Balance Amount:</strong> ₹${balanceAmount.toFixed(2)}</p>
+          <p><strong>Remaining Tenure:</strong> ${remainingTenure} months</p>
+          <p><strong>EMI:</strong> ₹${emi.toFixed(2)} per month</p>
+        </div>
+      `;
+
+      // Create Graph
+      chart = new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          labels: ['Paid', 'Remaining'],
+          datasets: [{
+            data: [monthsPaid, tenure - monthsPaid],
+            backgroundColor: ['#4caf50', '#f44336'],
+            borderColor: '#fff',
+            borderWidth: 2,
+          }]
+        },
+        options: {
+          responsive: true,
+          plugins: {
+            legend: {
+              position: 'top',
+            },
+            tooltip: {
+              callbacks: {
+                label: function (context) {
+                  const percentage = ((context.raw / tenure) * 100).toFixed(2);
+                  return `${context.label}: ${percentage}% (${context.raw} months)`;
+                }
+              }
+            }
+          }
+        }
+      });
+    }
+  </script>
+
+  <!-- Include Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

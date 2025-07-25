@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Loan Application</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            margin: 20px;
+            background: linear-gradient(to right, #14145c, #000000); /* Blue gradient background */
+            color: #333;
+            text-align: center; /* Center the entire body content */
+        }
+
+        h2 {
+            color: white;
+            margin-bottom: 20px;
+            text-align: center; /* Ensure title is centered */
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            width: 60%; /* Reduced the container size */
+            text-align: left; /* Align form content to the left */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            background-color: #14145c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: skyblue;
+        }
+
+        .file-input {
+            padding: 0;
+        }
+
+        .emi-calculation {
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 15px;
+        }
+
+        /* Confirmation Message Style */
+        .confirmation-message {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border-radius: 4px;
+            text-align: center;
+            display: none; /* Initially hidden */
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Business Loan Application</h2>
+    <form id="loanForm" action="/submit-application" method="POST" enctype="multipart/form-data" onsubmit="return handleSubmit(event)">
+        <!-- Personal and Business Details -->
+        <label for="fullName">Full Name:</label>
+        <input type="text" id="fullName" name="fullName" required>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required min="18" max="100">
+
+        <!-- Contact and Email Fields (Moved after Age) -->
+        <label for="contactNumber">Contact Number:</label>
+        <input type="text" id="contactNumber" name="contactNumber" pattern="\d{10}" maxlength="10" required placeholder="Enter 10-digit number">
+
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" name="email" required placeholder="Enter your email address">
+
+        <label for="aadhaarNumber">Aadhaar Number:</label>
+        <input type="text" id="aadhaarNumber" name="aadhaarNumber" maxlength="12" pattern="\d{12}" required>
+
+        <label for="businessName">Business Name:</label>
+        <input type="text" id="businessName" name="businessName" required>
+
+        <label for="address">Business Address:</label>
+        <textarea id="address" name="address" rows="1" required></textarea>
+
+        <label for="businessLicense">Business License:</label>
+        <input type="file" id="businessLicense" name="businessLicense" accept=".pdf,.docx,.jpg,.png" required class="file-input">
+
+        <label for="financialInformation">Financial Information (Annual Turnover, etc.):</label>
+        <textarea id="financialInformation" name="financialInformation" rows="2" required></textarea>
+
+        <label for="balanceSheet">Balance Sheet:</label>
+        <input type="file" id="balanceSheet" name="balanceSheet" accept=".pdf,.docx,.jpg,.png" required class="file-input">
+
+        <!-- Loan Details -->
+        <label for="loanAmount">Loan Amount (₹):</label>
+        <input type="number" id="loanAmount" name="loanAmount" required>
+
+        <label for="propertyValue">Property Value (₹):</label>
+        <input type="number" id="propertyValue" name="propertyValue" required>
+
+        <!-- Property Proof Upload -->
+        <label for="propertyProof">Property Proof:</label>
+        <input type="file" id="propertyProof" name="propertyProof" accept=".jpg,.jpeg,.png,.pdf" required class="file-input">
+
+        <label for="loanPurpose">Loan Purpose:</label>
+        <textarea id="loanPurpose" name="loanPurpose" rows="1" required></textarea>
+
+        <!-- Loan Scheme and Interest Rate -->
+        <label for="loanScheme">Choose Loan Scheme:</label>
+        <select id="loanScheme" name="loanScheme" onchange="updateInterestRate()">
+            <option value="Pradhaan Mantri Mudra Yojana">Pradhaan Mantri Mudra Yojana</option>
+            <option value="Udyogini">Udyogini</option>
+            <option value="MSME Loan">MSME Loan</option>
+        </select>
+
+        <!-- Interest Rate Section -->
+        <div class="emi-calculation">
+            <h3>Interest Rate</h3>
+            <label for="emiInterestRate">Interest Rate (% per annum):</label>
+            <input type="number" id="emiInterestRate" name="emiInterestRate" required readonly>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit Application</button>
+    </form>
+
+    <!-- Confirmation Message -->
+    <div id="confirmationMessage" class="confirmation-message">
+        Your application has been successfully submitted. Thank you!
+    </div>
+
+    <script>
+        // Function to update the interest rate based on selected loan scheme
+        function updateInterestRate() {
+            const loanScheme = document.getElementById('loanScheme').value;
+            let interestRate = 0;
+
+            // Update interest rate based on selected loan scheme
+            if (loanScheme === "Pradhaan Mantri Mudra Yojana") {
+                interestRate = 11.65; // Wedding Loan interest rate
+            } else if (loanScheme === "Udyogini") {
+                interestRate = 12.5; // Travel Loan interest rate
+            } else if (loanScheme === "MSME Loan") {
+                interestRate = 13.49; // Home Renovation Loan interest rate
+            }
+
+            // Set the interest rate in the EMI input field
+            document.getElementById('emiInterestRate').value = interestRate;
+        }
+
+        // Set the default interest rate on page load
+        window.onload = updateInterestRate;
+
+        // Handle form submission
+        function handleSubmit(event) {
+            // Prevent the form from actually submitting
+            event.preventDefault();
+
+            // Show the confirmation message
+            document.getElementById('confirmationMessage').style.display = 'block';
+
+            // Redirect to the Thank You page after 3 seconds
+            setTimeout(function() {
+                window.location.href = "thankyou.html"; // Replace with your actual Thank You page URL
+            }, 3000); // 3000 milliseconds = 3 seconds delay
+        }
+    </script>
+
+</body>
+</html>

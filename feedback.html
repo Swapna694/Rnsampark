@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rnasampark - Feedback Form</title>
+    <style>
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            background: linear-gradient(to right, #000000, #14145c);
+            margin: 0;
+            padding: 0;
+        }
+
+        .feedback-container {
+            width: 100%;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(27, 2, 116, 0.1);
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 16px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #150470;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+            font-size: 16px;
+        }
+
+        label {
+            margin-bottom: 5px;
+            color: #0d0a88;
+            font-size: 16px;
+        }
+
+        input, textarea {
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            font-family: 'Times New Roman', Times, serif;
+            background-color: #f9f9f9; /* Same background color for input and textarea */
+        }
+
+        /* Uniform Background for Star Rating Box */
+        .stars-box {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            font-size: 16px;
+            padding: 10px;
+            border: 1px solid #ccc; /* Border of the box */
+            border-radius: 8px;
+            background-color: #f9f9f9; /* Matching background color */
+            margin-bottom: 15px;
+        }
+
+        .star {
+            font-size: 40px;
+            cursor: pointer;
+            color: #ccc;
+        }
+
+        .star.selected {
+            color: #f39c12;
+        }
+
+        button {
+            padding: 10px;
+            background-color: #0c0363;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        button:hover {
+            background-color: #1092a3;
+        }
+
+        .message {
+            margin-top: 20px;
+            text-align: center;
+            font-size: 18px;
+            color: rgb(4, 13, 145);
+        }
+    </style>
+</head>
+<body>
+    <div class="feedback-container">
+        <h1>We Value Your Feedback</h1>
+        <form id="feedbackForm">
+            <label for="name">Your Name:</label>
+            <input type="text" id="name" name="name" required>
+
+            <label for="rating">How would you rate our platform?</label>
+            <!-- Star Rating Box Container -->
+            <div class="stars-box" id="rating">
+                <span class="star" data-value="1">&#9733;</span>
+                <span class="star" data-value="2">&#9733;</span>
+                <span class="star" data-value="3">&#9733;</span>
+                <span class="star" data-value="4">&#9733;</span>
+                <span class="star" data-value="5">&#9733;</span>
+            </div>
+
+            <label for="comments">Your Feedback:</label>
+            <textarea id="comments" name="comments" rows="4" required></textarea>
+
+            <button type="submit">Submit Feedback</button>
+        </form>
+        <div id="feedbackMessage" class="message"></div>
+    </div>
+
+    <script>
+        // Handle star rating selection
+        document.querySelectorAll('.star').forEach(star => {
+            star.addEventListener('click', function() {
+                const ratingValue = this.getAttribute('data-value');
+                // Remove 'selected' class from all stars
+                document.querySelectorAll('.star').forEach(star => star.classList.remove('selected'));
+                // Add 'selected' class to clicked star and all previous stars
+                this.classList.add('selected');
+                let prevStar = this.previousElementSibling;
+                while (prevStar) {
+                    prevStar.classList.add('selected');
+                    prevStar = prevStar.previousElementSibling;
+                }
+            });
+        });
+
+        // Form submission handler
+        document.getElementById('feedbackForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Get the form values
+            const name = document.getElementById('name').value;
+            const rating = document.querySelector('.stars-box .selected') ? document.querySelector('.stars-box .selected').getAttribute('data-value') : 'Not Rated';
+            const comments = document.getElementById('comments').value;
+
+            // Simulate sending data to a server (you can replace this with actual server integration)
+            console.log('Feedback received:');
+            console.log('Name:', name);
+            console.log('Rating:', rating);
+            console.log('Comments:', comments);
+
+            // Show confirmation message
+            document.getElementById('feedbackMessage').innerText = "Thank you for your feedback, " + name + "!";
+
+            // Redirect to thankyou.html after 2 seconds (for example)
+            setTimeout(function() {
+                window.location.href = "thankyou.html";  // Redirect to thankyou.html
+            }, 2000); // Delay to show the thank you message before redirecting
+
+            // Clear the form
+            document.getElementById('feedbackForm').reset();
+            // Reset stars selection
+            document.querySelectorAll('.star').forEach(star => star.classList.remove('selected'));
+        });
+    </script>
+</body>
+</html>

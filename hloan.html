@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Loan Application</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #14145c, #000000); /* Gradient blue background */
+            color: #333;
+        }
+
+        h2 {
+            color: white;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: 30px auto; /* Centering the form */
+            max-width: 700px; /* Reduced container size */
+            width: 100%;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            background-color: #14145c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: skyblue;
+        }
+
+        .file-input {
+            padding: 0;
+        }
+
+        .conversion-block,
+        .engineer-report-block {
+            background-color: #f9f9f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+
+        .engineer-report-block input {
+            margin-top: 10px;
+        }
+
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+            padding: 15px;
+            border-radius: 4px;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Home Loan Application</h2>
+    <form id="loanForm" action="/submit-application" method="POST" enctype="multipart/form-data" onsubmit="handleFormSubmit(event)">
+        <!-- Personal Details -->
+        <label for="fullName">Full Name:</label>
+        <input type="text" id="fullName" name="fullName" required>
+
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required min="18" max="100">
+        
+        <label for="contactNumber">Contact Number:</label>
+        <input type="text" id="contactNumber" name="contactNumber" pattern="\d{10}" maxlength="10" required placeholder="Enter 10-digit number">
+
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" name="email" required placeholder="Enter your email address">
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="3" required></textarea>
+
+        <!-- Aadhaar Number Field -->
+        <label for="aadhaarNumber">Aadhaar Number:</label>
+        <input type="text" id="aadhaarNumber" name="aadhaarNumber" required pattern="\d{12}" maxlength="12" placeholder="Enter 12-digit Aadhaar Number">
+
+        <!-- Employment Details -->
+        <label for="employmentType">Employment Type:</label>
+        <select id="employmentType" name="employmentType" required onchange="toggleFileUploads()">
+            <option value="salaried">Salaried</option>
+            <option value="selfEmployed">Self-Employed</option>
+            <option value="businessOwner">Business Owner</option>
+            <option value="other">Other</option>
+        </select>
+
+        <!-- Conditional File Uploads -->
+        <div id="salariedSection" style="display:none;">
+            <label for="salarySlip">Upload Salary Slip:</label>
+            <input type="file" id="salarySlip" name="salarySlip" accept=".pdf,.jpg,.png,.jpeg" class="file-input">
+        </div>
+
+        <div id="businessOwnerSection" style="display:none;">
+            <label for="businessLicense">Upload Business License:</label>
+            <input type="file" id="businessLicense" name="businessLicense" accept=".pdf,.jpg,.png,.jpeg" class="file-input">
+        </div>
+
+        <div id="selfEmployedOtherSection" style="display:none;">
+            <label for="propertyProof">Upload Property Proof (for Self-Employed/Other):</label>
+            <input type="file" id="propertyProof" name="propertyProof" accept=".pdf,.jpg,.png,.jpeg" class="file-input">
+        </div>
+
+        <!-- Property Details -->
+        <label for="propertyType">Property Type:</label>
+        <select id="propertyType" name="propertyType" required>
+            <option value="apartment">Apartment</option>
+            <option value="independentHouse">Independent House</option>
+            <option value="land">Land</option>
+            <option value="commercial">Commercial Property</option>
+        </select>
+
+        <label for="propertyLocation">Property Location:</label>
+        <input type="text" id="propertyLocation" name="propertyLocation" required>
+
+        <label for="propertyValue">Property Value (₹):</label>
+        <input type="number" id="propertyValue" name="propertyValue" required>
+
+        <!-- Conversion Copy Block -->
+        <div class="conversion-block">
+            <label for="propertyPhoto">Conversion Copy:</label>
+            <input type="file" id="propertyPhoto" name="propertyPhoto" accept=".jpg,.jpeg,.png,.pdf" class="file-input" required>
+        </div>
+
+        <!-- Engineer Estimate Report Block (New) -->
+        <div class="engineer-report-block">
+            <label for="engineerEstimateReport">Upload Engineer Estimate Report:</label>
+            <input type="file" id="engineerEstimateReport" name="engineerEstimateReport" accept=".pdf,.jpg,.png,.jpeg" class="file-input" required>
+        </div>
+
+        <!-- Loan Details -->
+        <label for="loanAmount">Loan Amount (₹):</label>
+        <input type="number" id="loanAmount" name="loanAmount" required>
+
+        <label for="loanTenure">Loan Tenure (in years):</label>
+        <input type="number" id="loanTenure" name="loanTenure" required min="1">
+
+        <!-- Loan Scheme Selection -->
+        <label for="loanScheme">Choose Loan Scheme:</label>
+        <select id="loanScheme" name="loanScheme" required onchange="updateInterestRate()">
+            <option value="Asha homeLoan">Home Asha homeLoan</option>
+            <option value="top_up homeLoan">top_up homeLoan</option>
+            <option value="shubh arambh">shubh arambh</option>
+        </select>
+
+        <!-- Fixed Interest Rate Block -->
+        <div>
+            <label for="interestRate">Interest Rate (% per annum):</label>
+            <input type="number" id="interestRate" name="interestRate" required readonly>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit Application</button>
+    </form>
+
+    <div id="messageContainer"></div>
+
+    <script>
+        // Function to toggle the display of file upload sections based on employment type
+        function toggleFileUploads() {
+            const employmentType = document.getElementById('employmentType').value;
+
+            // Hide all sections first
+            document.getElementById('salariedSection').style.display = 'none';
+            document.getElementById('businessOwnerSection').style.display = 'none';
+            document.getElementById('selfEmployedOtherSection').style.display = 'none';
+
+            // Show the corresponding section based on the selected employment type
+            if (employmentType === 'salaried') {
+                document.getElementById('salariedSection').style.display = 'block';
+            } else if (employmentType === 'businessOwner') {
+                document.getElementById('businessOwnerSection').style.display = 'block';
+            } else if (employmentType === 'selfEmployed' || employmentType === 'other') {
+                document.getElementById('selfEmployedOtherSection').style.display = 'block';
+            }
+        }
+
+        // Function to update the interest rate based on selected loan scheme
+        function updateInterestRate() {
+            const loanScheme = document.getElementById('loanScheme').value;
+            let interestRate = 0;
+
+            // Set fixed interest rates based on the selected loan scheme
+            if (loanScheme === "Asha homeLoan") {
+                interestRate = 10.95; // Home Loan interest rate
+            } else if (loanScheme === "top_up homeLoan") {
+                interestRate = 11.10; // Top-up Home Loan interest rate
+            } else if (loanScheme === "shubh arambh") {
+                interestRate = 11.25; // Shubh Arambh loan interest rate
+            }
+
+            // Set the interest rate in the Interest Rate input field
+            document.getElementById('interestRate').value = interestRate;
+        }
+
+        // Function to handle form submission
+        function handleFormSubmit(event) {
+            event.preventDefault(); // Prevent form submission
+
+            // Display success message
+            const messageContainer = document.getElementById('messageContainer');
+            messageContainer.innerHTML = '<div class="success-message">Your loan application has been successfully submitted!</div>';
+
+            // Redirect to the Thank You page after 3 seconds
+            setTimeout(function() {
+                window.location.href = "thankyou.html"; // Redirect to the "Thank You" page
+            }, 3000);
+        }
+
+        // Initialize the page by hiding all upload sections and setting the default interest rate
+        window.onload = function() {
+            toggleFileUploads();
+            updateInterestRate();
+        };
+    </script>
+
+</body>
+</html>

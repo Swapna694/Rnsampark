@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Loan Application</title>
+    <style>
+        body {
+            font-family: "Times New Roman", Times, serif;;
+            margin: 20px;
+            background: linear-gradient(135deg, #14145c, #000000); /* Gradient blue background */
+            color: #333;
+        }
+
+        h2 {
+            color: #fff;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin: auto;
+            width: 60%; /* Reduced the container size */
+            text-align: left; /* Align form content to the left */
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input, select, textarea, button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        button {
+            background-color: #14145c;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s;
+        }
+
+        button:hover {
+            background-color: #2ecc71;
+        }
+
+        .file-input {
+            padding: 0;
+        }
+
+        .conditional-input {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Personal Loan Application</h2>
+    <form id="loanForm" action="/submit-application" method="POST" onsubmit="redirectToThankYouPage(event)">
+        <!-- Personal Loan Details -->
+        <label for="fullName">Full Name:</label>
+        <input type="text" id="fullName" name="fullName" required>
+
+        <!-- Age Block Added Here -->
+        <label for="age">Age:</label>
+        <input type="number" id="age" name="age" required min="18" max="100">
+
+        <label for="contactNumber">Contact Number:</label>
+        <input type="text" id="contactNumber" name="contactNumber" pattern="\d{10}" maxlength="10" required placeholder="Enter 10-digit number">
+
+        <label for="email">Email Address:</label>
+        <input type="email" id="email" name="email" required placeholder="Enter your email address">
+
+        <label for="aadhaarNumber">Aadhaar Number:</label>
+        <input type="text" id="aadhaarNumber" name="aadhaarNumber" maxlength="12" pattern="\d{12}" required>
+
+        <label for="address">Address:</label>
+        <textarea id="address" name="address" rows="3" required></textarea>
+
+        <label for="employmentStatus">Employment Status:</label>
+        <select id="employmentStatus" name="employmentStatus" onchange="toggleDocumentField()" required>
+            <option value="Salaried">Salaried</option>
+            <option value="Self-employed">Self-employed</option>
+            <option value="Others">Others</option>
+        </select>
+
+        <label for="monthlySalary">Monthly Salary (₹):</label>
+        <input type="number" id="monthlySalary" name="monthlySalary" required>
+
+        <!-- Conditional Salary Slip / Property Tax Receipt Upload -->
+        <div class="conditional-input" id="salarySlipInput">
+            <label for="salarySlip">Salary Slip (Upload):</label>
+            <input type="file" id="salarySlip" name="salarySlip" accept=".pdf,.docx,.jpg,.png" class="file-input">
+        </div>
+        <div class="conditional-input" id="propertyTaxInput">
+            <label for="propertyTaxReceipt">Property Tax Receipt (Upload):</label>
+            <input type="file" id="propertyTaxReceipt" name="propertyTaxReceipt" accept=".pdf,.docx,.jpg,.png" class="file-input">
+        </div>
+
+        <label for="loanAmount">Loan Amount (₹):</label>
+        <input type="number" id="loanAmount" name="loanAmount" required>
+
+        <label for="propertyValue">Property Value (₹):</label>
+        <input type="number" id="propertyValue" name="propertyValue" required>
+
+        <label for="loanPurpose">Loan Purpose:</label>
+        <textarea id="loanPurpose" name="loanPurpose" rows="3" required></textarea>
+
+        <!-- Loan Scheme Selection -->
+        <label for="loanScheme">Choose Loan Scheme:</label>
+        <select id="loanScheme" name="loanScheme" onchange="updateInterestRate()" required>
+            <option value="weddingLoan">Wedding Loan</option>
+            <option value="travelLoan">Travel Loan</option>
+            <option value="homeRenovationLoan">Home Renovation Loan</option>
+        </select>
+
+        <!-- Interest Rate Section -->
+        <div class="emi-calculation">
+            <h3>Interest Rate</h3>
+            <label for="emiInterestRate">Interest Rate (% per annum):</label>
+            <input type="number" id="emiInterestRate" name="emiInterestRate" required readonly>
+        </div>
+
+        <!-- Submit Button -->
+        <button type="submit">Submit Application</button>
+    </form>
+
+    <script>
+        // Function to update the interest rate based on selected loan scheme
+        function updateInterestRate() {
+            const loanScheme = document.getElementById('loanScheme').value;
+            let interestRate = 0;
+
+            // Update interest rate based on selected loan scheme
+            if (loanScheme === "weddingLoan") {
+                interestRate = 10.65; // Wedding Loan interest rate
+            } else if (loanScheme === "travelLoan") {
+                interestRate = 10.75; // Travel Loan interest rate
+            } else if (loanScheme === "homeRenovationLoan") {
+                interestRate = 10.49; // Home Renovation Loan interest rate
+            }
+
+            // Set the interest rate in the EMI input field
+            document.getElementById('emiInterestRate').value = interestRate;
+        }
+
+        // Function to toggle between Salary Slip and Property Tax Receipt fields
+        function toggleDocumentField() {
+            const employmentStatus = document.getElementById('employmentStatus').value;
+            const salarySlipInput = document.getElementById('salarySlipInput');
+            const propertyTaxInput = document.getElementById('propertyTaxInput');
+
+            // Show/Hide relevant input fields based on employment status
+            if (employmentStatus === "Salaried") {
+                salarySlipInput.style.display = 'block';
+                propertyTaxInput.style.display = 'none';
+            } else {
+                salarySlipInput.style.display = 'none';
+                propertyTaxInput.style.display = 'block';
+            }
+        }
+
+        // Function to redirect to the "Thank You" page after form submission
+        function redirectToThankYouPage(event) {
+            event.preventDefault(); // Prevent form submission
+            // Redirect to the thank you page
+            window.location.href = 'thankyou.html'; // Change this to the correct URL for your "Thank You" page
+        }
+
+        // Set the default interest rate and field visibility on page load
+        window.onload = function() {
+            updateInterestRate();
+            toggleDocumentField(); // Set initial visibility based on the default option
+        };
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Loan Eligibility</title>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      background: linear-gradient(to bottom, #000000, #14145c);
+      margin: 0;
+      padding: 0;
+      color: #333;
+    }
+
+    .container {
+      width: 80%;
+      max-width: 450px;
+      margin: 50px auto;
+      padding: 30px;
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+      text-align: center;
+    }
+
+    h2, h3 {
+      margin-bottom: 20px;
+      font-size: 1.8em;
+      color: #14145c;
+    }
+
+    form label {
+      display: block;
+      margin: 15px 0 5px;
+      font-weight: bold;
+      font-size: 1rem;
+      text-align: left;
+    }
+
+    form input, form select, form button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: none;
+      border-radius: 5px;
+      box-sizing: border-box;
+      font-size: 1rem;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    form input, form select {
+      border: 1px solid #ddd;
+      transition: border-color 0.3s ease;
+    }
+
+    form input:focus, form select:focus {
+      border-color: #14145c;
+      outline: none;
+    }
+
+    form button {
+      background: linear-gradient(to right, #14145c, #14145c);
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    form button:hover {
+      transform: scale(1.05);
+      background: linear-gradient(to right, #000000, #14145c);
+    }
+
+    .message {
+      margin-top: 20px;
+      font-size: 1.1em;
+      font-weight: bold;
+    }
+
+    .message.success {
+      color: green;
+    }
+
+    .message.error {
+      color: red;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 1.1em;
+      color: #333;
+      font-weight: bold;
+    }
+
+    #emiCalculator {
+      display: none; /* Hidden initially */
+    }
+
+    footer {
+      margin-top: 40px;
+      text-align: center;
+      font-size: 0.9em;
+      color: #eee;
+    }
+
+    #applyLoanButton {
+      display: none;
+      margin-top: 20px;
+      background: linear-gradient(to right, #14145c, #14145c);
+      color: #fff;
+      padding: 12px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      border-radius: 5px;
+      border: none;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+
+    #applyLoanButton:hover {
+      transform: scale(1.05);
+      background: linear-gradient(to right, #000000, #14145c);
+    }
+
+    .input-range-label {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .input-range-label span {
+      font-weight: bold;
+    }
+
+    /* Custom style for range input */
+    #tenureRange {
+      font-size: 1rem;
+      color: #333;
+    }
+
+    #tenureLabel {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    #proceedMessage {
+      display: none;
+      margin-top: 20px;
+    }
+
+    #proceedMessage button {
+      margin: 10px;
+      padding: 12px 25px;
+      background: #14145c;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    #proceedMessage button:hover {
+      background: #000000;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Personal Loan Eligibility Check</h2>
+    <form id="eligibilityForm">
+      <label for="name">Name</label>
+      <input type="text" id="name" name="name" placeholder="Enter your name" required>
+
+      <label for="dob">Date of Birth</label>
+      <input type="text" id="dob" name="dob" placeholder="DD-MM-YYYY" required>
+
+      <label for="age">Age</label>
+      <input type="text" id="age" name="age" placeholder="Calculated Age" readonly>
+
+      <label for="citizenship">Citizenship</label>
+      <input type="text" id="citizenship" value="Indian" readonly>
+
+      <label for="annualIncome">Annual Income (₹)</label>
+      <input type="number" id="annualIncome" name="annualIncome" placeholder="Enter your annual income" required>
+
+      <label for="loanAmount">Estimated Loan Amount (₹)</label>
+      <input type="number" id="loanAmount" name="loanAmount" placeholder="₹50,000 - ₹50,00,000" required>
+
+      <button type="submit">Check Eligibility</button>
+    </form>
+
+    <p id="message" class="message"></p>
+
+    <div id="emiCalculator">
+      <h3>EMI Calculator</h3>
+      <form id="emiForm">
+        <label for="emiLoanAmount">Loan Amount (₹)</label>
+        <input type="number" id="emiLoanAmount" placeholder="Enter loan amount" readonly>
+
+        <label for="interestRate">Interest Rate (9.50% to 17%)</label>
+        <input type="range" id="interestRate" min="9.5" max="17" step="0.1" value="9.5">
+        <p>Selected Interest Rate: <span id="interestRateDisplay">9.50%</span></p>
+
+        <!-- Displaying the range near the tenure label -->
+        <label for="tenure">Tenure (12 to 180 months)</label>
+        <input type="number" id="tenure" name="tenure" placeholder="Enter number of months" min="12" max="180" required>
+
+        <button type="button" onclick="calculateEMI()">Calculate EMI</button>
+      </form>
+
+      <p class="result" id="emiResult"></p>
+      <p class="result" id="totalPaymentResult"></p>
+
+      <div id="proceedMessage">
+        <p>Do you want to proceed with the loan application?</p>
+        <button type="button" id="proceedYes" onclick="proceedWithLoan()">Yes, Proceed</button>
+        <button type="button" id="proceedNo" onclick="goToHomepage()">No, Go to Homepage</button>
+      </div>
+    </div>
+
+    <button type="button" id="applyLoanButton" onclick="applyForNewLoan()">Apply for New Loan</button>
+  </div>
+
+  <footer>© 2024 Business Loan Services | Your trusted guide.</footer>
+
+  <script>
+    const form = document.getElementById('eligibilityForm');
+    const message = document.getElementById('message');
+    const emiCalculator = document.getElementById('emiCalculator');
+    const ageField = document.getElementById('age');
+    const dobInput = document.getElementById('dob');
+    const loanAmountField = document.getElementById('loanAmount');
+    const emiLoanAmountField = document.getElementById('emiLoanAmount');
+    const totalPaymentResult = document.getElementById('totalPaymentResult');
+    const proceedYesButton = document.getElementById('proceedYes');
+    const proceedNoButton = document.getElementById('proceedNo');
+    const applyLoanButton = document.getElementById('applyLoanButton');
+    const interestRateInput = document.getElementById('interestRate');
+    const interestRateDisplay = document.getElementById('interestRateDisplay');
+    const tenureInput = document.getElementById('tenure');
+    const tenureRangeText = document.getElementById('tenureRangeDisplay');
+
+    dobInput.addEventListener('input', function () {
+      const [day, month, year] = dobInput.value.split('-').map(Number);
+      const dobDate = new Date(year, month - 1, day);
+      const today = new Date();
+      let age = today.getFullYear() - dobDate.getFullYear();
+      const monthDiff = today.getMonth() - dobDate.getMonth();
+      if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < dobDate.getDate())) {
+        age--;
+      }
+      ageField.value = age >= 0 ? age : '';
+    });
+
+    interestRateInput.addEventListener('input', function () {
+      interestRateDisplay.textContent = `${parseFloat(interestRateInput.value).toFixed(2)}%`;
+    });
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const age = parseInt(ageField.value, 10);
+      const annualIncome = parseFloat(document.getElementById('annualIncome').value);
+      const loanAmount = parseFloat(loanAmountField.value);
+
+      // Eligibility Checks
+      if (age < 21 || age > 65) {
+        message.textContent = "Not Eligible: Age must be between 21 and 65.";
+        message.className = "message error";
+        emiCalculator.style.display = "none";
+        return;
+      }
+
+      if (annualIncome < 100000) {
+        message.textContent = "Not Eligible: Annual income must be above ₹1,00,000.";
+        message.className = "message error";
+        emiCalculator.style.display = "none";
+        return;
+      }
+
+      if (loanAmount < 50000 || loanAmount > 50000000) {
+        message.textContent = "Not Eligible: Loan amount must be between ₹50,000 and ₹50,00,000.";
+        message.className = "message error";
+        emiCalculator.style.display = "none";
+        return;
+      }
+
+      // If eligible
+      message.textContent = "Congratulations, you are eligible! Use the EMI Calculator below.";
+      message.className = "message success";
+      emiCalculator.style.display = "block";
+
+      emiLoanAmountField.value = loanAmount; // Set loan amount for EMI calculation
+    });
+
+    // EMI Calculator Function
+    function calculateEMI() {
+      const loanAmount = parseFloat(emiLoanAmountField.value);
+      const interestRate = parseFloat(interestRateInput.value) / 12 / 100;
+      const tenure = parseInt(tenureInput.value, 10);
+
+      if (!loanAmount || !interestRate || !tenure) {
+        document.getElementById('emiResult').textContent = "Please fill out all fields.";
+        return;
+      }
+
+      const emi = (loanAmount * interestRate * Math.pow(1 + interestRate, tenure)) / (Math.pow(1 + interestRate, tenure) - 1);
+      const totalPayment = emi * tenure;
+
+      document.getElementById('emiResult').textContent = `Your EMI is ₹${emi.toFixed(2)}`;
+      totalPaymentResult.textContent = `Total Payment over ${tenure} months: ₹${totalPayment.toFixed(2)}`;
+
+      // Show proceed message after EMI calculation
+      document.getElementById('proceedMessage').style.display = "block";
+    }
+
+    // Proceed with loan application
+    function proceedWithLoan() {
+      const proceedMessage = document.getElementById('proceedMessage');
+      proceedMessage.innerHTML = "<p>Your loan application is being processed. Thank you!</p>";
+      applyLoanButton.style.display = "block";
+    }
+
+    // Redirect to homepage if "No" is clicked
+    function goToHomepage() {
+      window.location.href = "home.html"; // Replace with your homepage URL
+    }
+
+    // Apply for New Loan button click
+    function applyForNewLoan() {
+        window.location.href = "ploan.html";
+    }
+  </script>
+</body>
+</html>
